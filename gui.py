@@ -9,7 +9,6 @@ import os, glob
 import main
 
 window = tkinter.Tk()
-
 style = ttk.Style(window)
 style.theme_use('clam')
 print(style.theme_use())
@@ -31,14 +30,23 @@ searchbutton.grid(row=4, column=2, pady=10, padx=10)
 
 img = None
 img_name = None
-
+display_img = None
+display_img2 = None
+img_memory = 0  #flag pour la superposition d'img
+img_memory_match = 0  #flag pour la superposition d'img matché
 def match():
+
+    global img_memory_match, display_img2
+
     if img_name != None:
         match = main.main(img_name)  
         nom = str(match).lower()
         print(nom)
         display_match = tkinter.Label(window, text=match, width=20, font=policefont, justify=CENTER)
         display_match.grid(row=6, column=3, pady=10, padx=10)
+        
+        if img_memory_match >= 1 :      #Pour éviter la superposition d'image à comparer
+            display_img2.destroy() 
         
         img = Image.open("affiche/" + nom + ".jpg")
         baseheight = 300
@@ -49,10 +57,10 @@ def match():
         img = ImageTk.PhotoImage(img_sized)  
         
         
-        display_img = tkinter.Label(window, image = img) #affichage de l'image en tant que bouton
-        display_img.image = img
-        display_img.grid(row=4, column=3, pady=10, padx=10)
-        
+        display_img2 = tkinter.Label(window, image = img) #affichage de l'image en tant que bouton
+        display_img2.image = img
+        display_img2.grid(row=4, column=3, pady=10, padx=10)
+        img_memory_match += 1
         
 
         
@@ -62,9 +70,10 @@ def match():
 
 def upload_image() :
     
-    global img, img_name
+    global img, img_name, img_memory, display_img
     
-    
+    if img_memory >= 1 :      #Pour éviter la superposition d'image à comparer
+            display_img.destroy()    
     img_type = [('Jpg Files', '*.jpg')] #définition des formats photo
     img_name = filedialog.askopenfilename(filetypes=img_type) #ouverture du répertoire photo avec seulement les photos jpg
     print(img_name)
@@ -88,6 +97,7 @@ def upload_image() :
     display_img = tkinter.Label(window, image = img, bg ="white") #affichage de l'image en tant que bouton
     display_img.image = img
     display_img.grid(row=4, column=1, pady=10, padx=10)
+    img_memory += 1
     
 
 
